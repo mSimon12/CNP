@@ -5,7 +5,7 @@ MAS contracts {
     infrastructure: Centralised
 
     agents:
-        worker #2;      // the participants (3) that offer a service
+        worker #0;      // the participants (3) that offer a service
         client #1;      // the CNP initiator
         //tom;
 

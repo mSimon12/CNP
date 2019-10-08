@@ -1,7 +1,7 @@
 //Beliefs
 
 /* Possible Occupations:
-    'cod - function - minValue - maxValue'
+    'cod - function - minValue - maxValue - min working time'
 */
 occupation(0,plumper,30,150,30).
 occupation(1,electrician,30,100,25).
@@ -29,7 +29,7 @@ thinking(false).
             !getPrice; !register.
 
 //Get the price for the service to be done
-+!getPrice : myFunction(F, Min, Max,_) & .random(R) & V = math.round(Min + (Max - Min)*R)
++!getPrice : myFunction(F, Min, Max, _) & .random(R) & V = math.round(Min + (Max - Min)*R)
             <- -+price(V).
 
 //Register the worker in the Yellow page
@@ -85,7 +85,7 @@ thinking(false).
       .abolish(proposal(CNPId,_,_));            // clear proposal memory
       -accept_proposal(CNPId)[source(A)];       // clear accept_proposal memory
       !work.                                    // do the task and report to client
-                                                  
+                                          
 // refuse Proposal if worker already busy
 +accept_proposal(CNPId)[source(A)]
    :   working(true)

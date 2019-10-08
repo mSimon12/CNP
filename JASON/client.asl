@@ -27,9 +27,10 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
 
 //Defines the worker function
 +!start : .random(R) & nOccupations(NO) & N = math.floor(NO*R) & occupation(N,F) & 
-           contracts_count(X) & X<10 & .my_name(A)
-        <-  -+contracts_count(X+1);
-            .concat(A,"-",X+1,Id);              // create an Id for the CNP -> name-nContract
+           contracts_count(X) & X<10 & XP = X+1 & .my_name(A) & 
+           .time(H,M,S) & .date(YY,MM,DD) & .random(RS) & R10 = math.round(10000*R) & RS10 = math.round(10000*RS)
+        <-  -+contracts_count(XP);
+            .concat(A, "-", YY, MM, DD, H, M, S, R10, RS10, Id);              // create an Id for the CNP -> name-nContract
             +myNeed(Id,F); 
             +tries(Id,0);
             .print("CNP id ",Id,": I need ",F);

@@ -39,56 +39,58 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
 
 // start the CNP
 +!startCNP(Id,Task) : tries(Id,N) & N<5
-   <- -+tries(Id,N+1);
+   <- -tries(Id,N);
+      +tries(Id,N+1);
+      .print(Id, " for ", Task, ": Try #", N);
       .wait(2000);                                       // wait participants introduction
       .df_search(Task,LP);                               // look for workers in the DF
       //.print("Sending CFP to ",LP);
-      .abolish(propose(CNPId,_)[source(_)]);             // clear propose memory
-      .abolish(refuse(CNPId)[source(_)]);                // clear refuse memory
+      .abolish(propose(Id,_)[source(_)]);             // clear propose memory
+      .abolish(refuse(Id)[source(_)]);                // clear refuse memory
       .send(LP,tell,cfp(Id,Task));                       // send CFP for all workers available to do the Task
       // the deadline of the CNP is now + 4 seconds (or all proposals were received)
       .wait(all_proposals_received(Id,.length(LP)), 4000, _);
       !contract(Id).
 
-+!startCNP(Id,Task) <- .print("Give up looking for ",Task);
-                        -tries(Id,N);                                   // clear tries counter
-                        -myNeed(CNPId,F).                               // clear myNeed.
++!startCNP(Id,Task) <- .print(Id, " gave up looking for ",Task);
+                        -tries(Id,_);                                   // clear tries counter
+                        -myNeed(Id,F).                               // clear myNeed.
 
 
-+!contract(CNPId)
-   :  .findall(offer(O,A),propose(CNPId,O)[source(A)],L) & L \== []     // there is a offer
++!contract(Id)
+   :  .findall(offer(O,A),propose(Id,O)[source(A)],L) & L \== []     // there is a offer
    <- .print("Offers are ",L);
       .min(L,offer(WOf,WAg));                                           // the first offer is the best
       .print("Winner is ",WAg," with ",WOf);
-      !announce_result(CNPId,L,WAg).
+      !announce_result(Id,L,WAg).
 
 // no offer case, maintain intention for current Need
-+!contract(CNPId) : myNeed(CNPId,F)
++!contract(Id) : myNeed(Id,F)
                <- .print("No offers.");
                   .wait(1000);
-                  !startCNP(CNPId,F).
+                  !startCNP(Id,F).
 
 +!announce_result(_,[],_).
 
 // announce to the winner
-+!announce_result(CNPId,[offer(_,WAg)|T],WAg)
-   <- .send(WAg,tell,accept_proposal(CNPId));
-      !announce_result(CNPId,T,WAg).
++!announce_result(Id,[offer(_,WAg)|T],WAg)
+   <- .send(WAg,tell,accept_proposal(Id));
+      !announce_result(Id,T,WAg).
 
 // announce to others
-+!announce_result(CNPId,[offer(_,LAg)|T],WAg)
-   <- .send(LAg,tell,reject_proposal(CNPId));
-      !announce_result(CNPId,T,WAg).
++!announce_result(Id,[offer(_,LAg)|T],WAg)
+   <- .send(LAg,tell,reject_proposal(Id));
+      !announce_result(Id,T,WAg).
 
 // receive inform_done from worker
-+inform_done(CNPId)[source(W)] <- 
++inform_done(Id)[source(W)] <- 
                .print("Best worker accept the service.");
-               -inform_done(CNPId)[source(W)].                          //clear inform_done memory
+               -inform_done(Id)[source(W)].                          //clear inform_done memory
 
 // receive refusal from worker and maintain intention for current Need
-+inform_ref(CNPId)[source(W)] : myNeed(CNPId,F)
++inform_ref(Id)[source(W)] : myNeed(Id,F)
             <- .print("Best worker busy --> restart search for ",F);
                .wait(1000);
-               !startCNP(CNPId,F);
-               -inform_ref(CNPId)[source(W)];                           // clear inform_ref memory
-               -myNeed(CNPId,F).                                       // clear myNeed
+               !startCNP(Id,F);
+               -inform_ref(Id)[source(W)];                           // clear inform_ref memory
+               -myNeed(Id,F).                                       // clear myNeed

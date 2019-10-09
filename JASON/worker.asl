@@ -3,7 +3,7 @@
 /* Possible Occupations:
     'cod - function - minValue - maxValue - min working time'
 */
-occupation(0,plumper,30,150,30).
+occupation(0,plumber,30,150,30).
 occupation(1,electrician,30,100,25).
 occupation(2,builder,80,1000,50).
 

@@ -9,6 +9,7 @@ occupation(2,builder).
 
 nOccupations(3).
 nCNPs(3).
+count(0).
 
 all_proposals_received(CNPId,NP) :-              // NP = number of participants
      .count(propose(CNPId,_)[source(_)], NO) &   // number of proposes received
@@ -24,6 +25,10 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
 //Register the agent as client 
 +!register <- .df_register(client).
 
++!init : count(X) & nCNPs(N)& X<=N <-
+      -+count(X+1);
+      !start |&| !init.
+/*
 +!init : nCNPs(N) <- 
       !loop(1, N, "").
 
@@ -36,7 +41,7 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
       .print("SF: ", S2);
       .term2string(T,S2);
       X is T.
-
+*/
 //Defines the worker function
 +!start : .random(R) & nOccupations(NO) & N = math.floor(NO*R) & occupation(N,F) & 
            .my_name(A) & 

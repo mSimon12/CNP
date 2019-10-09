@@ -36,7 +36,7 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
 //Defines the worker function
 +!start : .random(R) & nOccupations(NO) & N = math.floor(NO*R) & occupation(N,F) & 
            .my_name(A) & 
-           .time(H,M,S) & .date(YY,MM,DD) & .random(RS) & R10 = math.round(10000*R) & RS10 = math.round(10000*RS)
+           .time(H,M,S) & .date(YY,MM,DD) & .random(RS) & R10 = math.round(1000000*R) & RS10 = math.round(1000000*RS)
         <-  .concat(A, "-", YY, MM, DD, H, M, S, R10, RS10, Id);              // create an Id for the CNP -> name-nContract
             +myNeed(Id,F); 
             +tries(Id,0);
@@ -60,7 +60,10 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
 
 +!startCNP(Id,Task) <- .print(Id, " gave up looking for ",Task);
                         -tries(Id,_);                                   // clear tries counter
-                        -myNeed(Id,F).                               // clear myNeed.
+                        //-myNeed(Id,F).                               // clear myNeed.
+                        +tries(Id,0);
+                        .print("Trying again");
+                        !startCNP(Id,Task).
 
 
 +!contract(Id)

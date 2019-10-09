@@ -1,7 +1,7 @@
 /* Initial beliefs and rules */
 
 /* Possible Occupations:
-    'cod - function - minValue - maxValue'
+    'cod - function
 */
 occupation(0,plumber).
 occupation(1,electrician).
@@ -14,11 +14,10 @@ occupation(7,painter).
 occupation(8,engineer).
 occupation(9,doctor).
 
-
-
 nOccupations(10).
 nCNPs(3).
 count(0).
+finished(0).
 
 all_proposals_received(CNPId,NP) :-              // NP = number of participants
      .count(propose(CNPId,_)[source(_)], NO) &   // number of proposes received
@@ -89,18 +88,29 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
             .print(Id, " could not found a worker for ", Task, ". Giving up!").
 
 
+@lc1[atomic]
 +!contract(Id)
    :  .findall(offer(O,A),propose(Id,O)[source(A)],L) & L \== []     // there is a offer
+      & finished(N)
    <- .print("Offers are ",L);
       .min(L,offer(WOf,WAg));                                           // the first offer is the best
       .print("Winner is ",WAg," with ",WOf);
-      !announce_result(Id,L,WAg).
+      !announce_result(Id,L,WAg);
+      -finished(N);
+      +finished(N+1);
+      !announce_finished.
 
 // no offer case, maintain intention for current Need
 +!contract(Id) : myNeed(Id,F)
                <- .print("No offers.");
                   .wait(1000);
                   !startCNP(Id,F).
+
++!announce_finished : finished(N) & nCNPs(NM) & N >= NM
+      <- .send(severino, tell, finished).
+
++!announce_finished : finished(N) & nCNPs(NM) & N < NM
+      <- .wait(1).
 
 +!announce_result(_,[],_).
 

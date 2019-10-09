@@ -13,7 +13,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 public class Worker extends Agent {
     private int myNumber = -1;
     Occupation myFunction; 
-    private int price = null;
+    private int price = 0;
     private Boolean working = false;
     private int jobs = 0;
     private int money = 0;
@@ -167,6 +167,7 @@ public class Worker extends Agent {
             if (cont>=this.time){
                 working = false;
                 myAgent.removeBehaviour(this);
+                System.out.println("-> Worker" + myNumber + ": \tFinished working!!!");
             }   
         } 
 

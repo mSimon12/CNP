@@ -58,11 +58,12 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
       .wait(all_proposals_received(Id,.length(LP)), 4000, _);
       !contract(Id).
 
-+!startCNP(Id,Task) <- .print(Id, " gave up looking for ",Task);
++!startCNP(Id,Task) <- .print(Id, " gave up looking for ",Task, " for now");
                         -tries(Id,_);                                   // clear tries counter
                         //-myNeed(Id,F).                               // clear myNeed.
                         +tries(Id,0);
-                        .print("Trying again");
+                        .wait(20000);
+                        .print(Id, " is looking for ", Task, " again");
                         !startCNP(Id,Task).
 
 

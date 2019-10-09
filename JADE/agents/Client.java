@@ -45,12 +45,13 @@ public class Client extends Agent {
                     Occupation task = new Occupation();
                     String myNeed = task.getOccup();    
                     
-                    tries[nContracts]=0;
-                    nContracts++;
-                    System.out.println("\n------------------- Client" + myNumber + " starting Contract Net Protocol " + nContracts + "! -------------------");
+                    
+                    System.out.println("\n------------------- Client" + myNumber + " starting Contract Net Protocol " + (nContracts+1) + "! -------------------");
                     System.out.println("-> Client" + myNumber + ": \tTrying to contract a " + myNeed);
                     
-                    myAgent.addBehaviour(new RequestPerformer(nContracts, myNeed));                                              
+                    tries[nContracts]=0;
+                    myAgent.addBehaviour(new RequestPerformer(nContracts, myNeed));
+                    nContracts++;                                              
                 }                
             }
         });
@@ -99,7 +100,7 @@ public class Client extends Agent {
                         workerAgents = new AID[result.length];
                         for (int i = 0; i < result.length; ++i) {
                             workerAgents[i] = result[i].getName();
-                            // System.out.println("\t-> " + workerAgents[i].getName());
+                            //System.out.println("\t-> " + workerAgents[i].getName());
                         }   
                         step = Steps.CFP;                         
                     }
@@ -111,7 +112,7 @@ public class Client extends Agent {
                 } catch (FIPAException fe) {
                     fe.printStackTrace();
                 } 
-
+                break;
             case CFP:     
                 // Send the cfp to all sellers
                 ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
@@ -197,7 +198,7 @@ public class Client extends Agent {
             if(step == Steps.START && tries[CNPId]>=5){
                 //End intention
                 try{
-                    System.out.println("-> Client" + myNumber + ": could not found a worker for " + myNeed + ". Giving up!");
+                    System.out.println("-> Client" + myNumber + ": \tCould not found a worker for " + myNeed + ". Giving up!");
                     myAgent.removeBehaviour(this);  
                 }catch(NullPointerException ex){
                     System.out.println("!!!!! Error removing intention !!!!!");
@@ -212,7 +213,7 @@ public class Client extends Agent {
                         myAgent.addBehaviour(new RequestPerformer(CNPId, myNeed));
                     }
                     else{
-                        System.out.println("-> Client" + myNumber + ": found a suitable worker for " + myNeed + " but he is buzy. Waiting for a while.");
+                        System.out.println("-> Client" + myNumber + ": \tFound a suitable worker for " + myNeed + " but he is buzy. Waiting for a while.");
                         try{
                             Thread.sleep(200);
                         } catch(Exception e){

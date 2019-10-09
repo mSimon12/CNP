@@ -10,7 +10,7 @@ public class Occupation {
 
     Occupation(){
         Random rand = new Random();
-        int n = rand.nextInt(3);
+        int n = rand.nextInt(10);
 
         //Define de worker function
         switch(n){

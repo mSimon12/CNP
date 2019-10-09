@@ -12,6 +12,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 public class Client extends Agent {
     private int myNumber = -1;
+    private int nCNPs = 3;              //Define how many CNP will be started
     private int nContracts = 0;
 
     @Override
@@ -23,10 +24,11 @@ public class Client extends Agent {
         System.out.println("Hello from " + getAID().getName() + "\tI am Client number " + myNumber);
 
         // create a simple behavior 
-        addBehaviour(new TickerBehaviour(this, 1000) {
-            protected void onTick() {
-                System.out.println("-> Client" + myNumber + ": \tNumber of contracts: " + nContracts);
-                if(nContracts<10){
+        addBehaviour(new OneShotBehaviour() {
+            public void action() {
+                while(nContracts < nCNPs){
+                    //System.out.println("-> Client" + myNumber + ": \tNumber of contracts: " + nContracts);
+                    
                     //Define which service will be required
                     Occupation task = new Occupation();
                     String myNeed = task.getOccup();                    
@@ -60,19 +62,16 @@ public class Client extends Agent {
                     } catch (FIPAException fe) {
                         fe.printStackTrace();
                     }                    
-                }
-                else{
-                    // System.out.println("-> Client" + myNumber + ": \tToo many contracts!");
-                }
-                
+                }                
             }
         });
+        //doDelete();
     }
 
-    // protected void takeDown() {
-    //     // Printout a dismissal message
-    //     System.out.println("Client-agent "+getAID().getName()+" terminating.");
-    // }
+    protected void takeDown() {
+        // Printout a dismissal message
+        System.out.println("Client-agent "+getAID().getName()+" terminating.");
+    }
 
     /**
        Inner class RequestPerformer.
@@ -162,7 +161,7 @@ public class Client extends Agent {
                         // Contract successful. We can terminate
                         System.out.println("-> Client" + myNumber + ": \n\tSuccessfully contract a " + myNeed + ": " + reply.getSender().getName());
                         System.out.println("\tPrice = " + bestPrice + "\n");
-                        nContracts--;    
+                        //nContracts--;    
                     } else {
                         // System.out.println("-> Client" + myNumber + ": \tAttempt failed: required worker already busy.");
                         myAgent.addBehaviour(new RequestPerformer(workerAgents,myNeed));

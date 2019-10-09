@@ -41,14 +41,13 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
             +myNeed(Id,F); 
             +tries(Id,0);
             .print("CNP id ",Id,": I need ",F);
-            !startCNP(Id,F);                    // start CNP
-            .print("After startCNP").
+            !startCNP(Id,F).                    // start CNP
 
 // start the CNP
 +!startCNP(Id,Task) : tries(Id,N) & N<5
    <- -tries(Id,N);
       +tries(Id,N+1);
-      .print(Id, " for ", Task, ": Try #", N);
+      //.print(Id, " for ", Task, ": Try #", N);
       .wait(2000);                                       // wait participants introduction
       .df_search(Task,LP);                               // look for workers in the DF
       //.print("Sending CFP to ",LP);
@@ -91,12 +90,12 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
 
 // receive inform_done from worker
 +inform_done(Id)[source(W)] <- 
-               .print("Best worker accept the service.");
+               .print("Best worker accept the service (", W, ")");
                -inform_done(Id)[source(W)].                          //clear inform_done memory
 
 // receive refusal from worker and maintain intention for current Need
 +inform_ref(Id)[source(W)] : myNeed(Id,F)
-            <- .print("Best worker busy --> restart search for ",F);
+            <- .print("Best worker (", W, ") busy --> restart search for ",F);
                .wait(1000);
                !startCNP(Id,F);
                -inform_ref(Id)[source(W)];                           // clear inform_ref memory

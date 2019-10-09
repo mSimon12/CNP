@@ -39,7 +39,7 @@ thinking(false).
 
 //Plan for working
 +!work : count(C) & workTime(WT) & C<WT <- .wait(200);
-                            .print("Work count: ", C, " of ", WT);
+                            //.print("Work count: ", C, " of ", WT);
                             -+count(C+1);
                             //.wait(200);
                             !work.
@@ -69,8 +69,8 @@ thinking(false).
 
 // refuse Call For Proposal if worker already busy
 +cfp(CNPId,Task)[source(A)] 
-   <- .print("refusing work on ",Offer," for ",A);
-      .send(A,tell,refuse(CNPId));
+   <- .send(A,tell,refuse(CNPId));
+      //.print("refusing work on ",Offer," for ",A);
       -cfp(CNPId,Task)[source(A)].              // clear cfp memory
 
 // Receives accept for porposal

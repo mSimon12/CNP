@@ -37,16 +37,16 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
 // Start CNPs
 +!init : count(X) & nCNPs(N) & X < N <-
       -+count(X+1);
-      !start |&| !init.
+      !start(X+1) |&| !init.
 
 +!init : true <- .print("No more requests").
 
 
 //Defines the worker function
-+!start : .random(R) & nOccupations(NO) & N = math.floor(NO*R) & occupation(N,F) & 
++!start(X) : .random(R) & nOccupations(NO) & N = math.floor(NO*R) & occupation(N,F) & 
            .my_name(A) & 
-           .time(H,M,S) & .date(YY,MM,DD) & .random(RS) & R10 = math.round(1000000*R) & RS10 = math.round(1000000*RS)
-        <-  .concat(A, "-", YY, MM, DD, H, M, S, R10, RS10, Id);              // create an Id for the CNP -> name-nContract
+           .time(H,M,S)
+        <-  .concat(A, "-", X, Id);              // create an Id for the CNP -> name-nContract
             +myNeed(Id,F); 
             +tries(Id,0);
             .print("CNP id ",Id,": I need ",F);

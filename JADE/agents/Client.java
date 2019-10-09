@@ -106,7 +106,7 @@ public class Client extends Agent {
                     }
                     else{
                         tries[CNPId]++;
-                        System.out.println("-> Client" + myNumber + ": \tNone worker agents found.");
+                        System.out.println("-> Client" + myNumber + "-" + CNPId + ": \tNone worker agents found.");
                     }
                     
                 } catch (FIPAException fe) {
@@ -125,7 +125,7 @@ public class Client extends Agent {
                 cfp.setConversationId("contract");
                 cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
                 myAgent.send(cfp);
-                System.out.println("Sending...");
+                // System.out.println("Sending...");
                 
                 // Prepare the template to get proposals
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("contract"),
@@ -178,7 +178,7 @@ public class Client extends Agent {
                     // Purchase order reply received
                     if (reply.getPerformative() == ACLMessage.INFORM) {
                         // Contract successful. We can terminate
-                        System.out.println("-> Client" + myNumber + ": \n\tSuccessfully contract a " + myNeed + ": " + reply.getSender().getName());
+                        System.out.println("-> Client" + myNumber + "-" + CNPId + ": \n\tSuccessfully contract a " + myNeed + ": " + reply.getSender().getName());
                         System.out.println("\tPrice = " + bestPrice + "\n");
                         //nContracts--;    
                     } else {
@@ -198,7 +198,7 @@ public class Client extends Agent {
             if(step == Steps.START && tries[CNPId]>=5){
                 //End intention
                 try{
-                    System.out.println("-> Client" + myNumber + ": \tCould not found a worker for " + myNeed + ". Giving up!");
+                    System.out.println("-> Client" + myNumber + "-" + CNPId + ": \tCould not found a worker for " + myNeed + ". Giving up!");
                     myAgent.removeBehaviour(this);  
                 }catch(NullPointerException ex){
                     System.out.println("!!!!! Error removing intention !!!!!");
@@ -213,11 +213,11 @@ public class Client extends Agent {
                         myAgent.addBehaviour(new RequestPerformer(CNPId, myNeed));
                     }
                     else{
-                        System.out.println("-> Client" + myNumber + ": \tFound a suitable worker for " + myNeed + " but he is buzy. Waiting for a while.");
+                        System.out.println("-> Client" + myNumber + "-" + CNPId + ": \tFound a suitable worker for " + myNeed + " but he is buzy. Waiting for a while.");
                         try{
                             Thread.sleep(200);
                         } catch(Exception e){
-                            System.out.println("-> Worker" + myNumber + ": \n\tErro in 'sleep'.");
+                            System.out.println("-> Client" + myNumber + "-" + CNPId + ": \n\tErro in 'sleep'.");
                         }   
                         myAgent.addBehaviour(new RequestPerformer(CNPId, myNeed));
 

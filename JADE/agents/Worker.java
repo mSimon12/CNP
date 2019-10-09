@@ -117,7 +117,7 @@ public class Worker extends Agent {
                         
                         // Add the behaviour for agent working
                         working = true;
-                        myAgent.addBehaviour(new agentWorking());
+                        myAgent.addBehaviour(new agentWorking(myFunction.getTime()));
                         System.out.println("-> Worker" + myNumber + ": \tWorking for: " + msg.getSender().getName());
                     } 
                     else{
@@ -146,6 +146,11 @@ public class Worker extends Agent {
 
     private class agentWorking extends CyclicBehaviour {
         private int cont=0;
+        private int time;
+
+        agentWorking(int t){
+            this.time = t;
+        }
 
         public void action(){
             try{
@@ -154,7 +159,7 @@ public class Worker extends Agent {
             } catch(Exception e){
                 System.out.println("-> Worker" + myNumber + ": \n\tErro in 'sleep'.");
             }   
-            if (cont>=50){
+            if (cont>=this.time){
                 working = false;
                 myAgent.removeBehaviour(this);
             }   

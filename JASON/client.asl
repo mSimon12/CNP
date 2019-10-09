@@ -8,8 +8,7 @@ occupation(1,electrician).
 occupation(2,builder).
 
 nOccupations(3).
-
-contracts_count(0).     //Number of contracts being done
+nCNPs(3).
 
 all_proposals_received(CNPId,NP) :-              // NP = number of participants
      .count(propose(CNPId,_)[source(_)], NO) &   // number of proposes received
@@ -17,7 +16,7 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
      NP = NO + NR.
 
 /* Initial goals */
-!start.
+!init.
 !register.
 
 /* Plans */
@@ -25,21 +24,18 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
 //Register the agent as client 
 +!register <- .df_register(client).
 
++!init <- !start |&| !start |&| !start.
+
 //Defines the worker function
 +!start : .random(R) & nOccupations(NO) & N = math.floor(NO*R) & occupation(N,F) & 
-           contracts_count(X) & X<10 & XP = X+1 & .my_name(A) & 
+           .my_name(A) & 
            .time(H,M,S) & .date(YY,MM,DD) & .random(RS) & R10 = math.round(10000*R) & RS10 = math.round(10000*RS)
-        <-  -+contracts_count(XP);
-            .concat(A, "-", YY, MM, DD, H, M, S, R10, RS10, Id);              // create an Id for the CNP -> name-nContract
+        <-  .concat(A, "-", YY, MM, DD, H, M, S, R10, RS10, Id);              // create an Id for the CNP -> name-nContract
             +myNeed(Id,F); 
             +tries(Id,0);
             .print("CNP id ",Id,": I need ",F);
             !startCNP(Id,F);                    // start CNP
-            .wait(1000);
-            !start.
-
-//Maintain desire for adding new Needs
-+!start <- .wait(2000); !start.
+            .print("After startCNP").
 
 // start the CNP
 +!startCNP(Id,Task) : tries(Id,N) & N<5
@@ -54,10 +50,9 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
       .wait(all_proposals_received(Id,.length(LP)), 4000, _);
       !contract(Id).
 
-+!startCNP(Id,Task): contracts_count(X) <- .print("Give up looking for ",Task);
++!startCNP(Id,Task): <- .print("Give up looking for ",Task);
                         -tries(Id,N);                                   // clear tries counter
-                        -myNeed(CNPId,F);                               // clear myNeed
-                        -+contracts_count(X-1).
+                        -myNeed(CNPId,F).                               // clear myNeed.
 
 
 +!contract(CNPId)
@@ -86,8 +81,7 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
       !announce_result(CNPId,T,WAg).
 
 // receive inform_done from worker
-+inform_done(CNPId)[source(W)] : contracts_count(X) 
-            <- -+contracts_count(X-1);
++inform_done(CNPId)[source(W)] <- 
                .print("Best worker accept the service.");
                -inform_done(CNPId)[source(W)].                          //clear inform_done memory
 

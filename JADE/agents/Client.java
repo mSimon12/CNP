@@ -10,16 +10,28 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
+enum Steps{
+    START,
+    CFP,
+    OFFERS,
+    ANSWER,
+    CONFIRMATION,
+    END
+  }
+
+
 public class Client extends Agent {
     private int myNumber = -1;
     private int nCNPs = 3;              //Define how many CNP will be started
     private int nContracts = 0;
+    private int[] tries; 
 
     @Override
     protected void setup() {
         // gets the argument
         Object[] args = getArguments();
         myNumber = Integer.valueOf(args[0].toString());
+        tries = new int[nCNPs];
         
         System.out.println("Hello from " + getAID().getName() + "\tI am Client number " + myNumber);
 
@@ -31,37 +43,14 @@ public class Client extends Agent {
                     
                     //Define which service will be required
                     Occupation task = new Occupation();
-                    String myNeed = task.getOccup();                    
+                    String myNeed = task.getOccup();    
+                    
+                    tries[nContracts]=0;
+                    nContracts++;
+                    System.out.println("\n------------------- Client" + myNumber + " starting Contract Net Protocol " + nContracts + "! -------------------");
                     System.out.println("-> Client" + myNumber + ": \tTrying to contract a " + myNeed);
                     
-                    // Update the list of worker agents that do the required service
-                    DFAgentDescription template = new DFAgentDescription();
-                    ServiceDescription sd = new ServiceDescription();
-                    sd.setType(myNeed);
-                    template.addServices(sd);
-                    
-                    try {
-                        DFAgentDescription[] result = DFService.search(myAgent, template); 
-                        if(result.length > 0){
-                            // System.out.println("-> Client" + myNumber + ": \tFound the following worker agents:");
-                            AID[] workerAgents = new AID[result.length];
-                            for (int i = 0; i < result.length; ++i) {
-                                workerAgents[i] = result[i].getName();
-                                // System.out.println("\t-> " + workerAgents[i].getName());
-                            }
-
-                            // Perform the request
-                            nContracts++;
-                            System.out.println("\n------------------- Client" + myNumber + " starting Contract Net Protocol " + nContracts + "! -------------------");
-                            myAgent.addBehaviour(new RequestPerformer(workerAgents, myNeed));                            
-                        }
-                        else{
-                            System.out.println("-> Client" + myNumber + ": \tNone worker agents found.");
-                        }
-                        
-                    } catch (FIPAException fe) {
-                        fe.printStackTrace();
-                    }                    
+                    myAgent.addBehaviour(new RequestPerformer(nContracts, myNeed));                                              
                 }                
             }
         });
@@ -85,17 +74,45 @@ public class Client extends Agent {
         private String myNeed;          //Required service
         private int bestPrice;          // The best offered price
         private int repliesCnt = 0;     // The counter of replies from seller agents
-        private int step = 0;
+        private Steps step = Steps.START;
+        private int CNPId;
         
         //Constructor to define Workers that are capable to do the desired need
-        RequestPerformer(AID[] id, String need){
-            workerAgents = id;
+        RequestPerformer(int CNP, String need){
+            this.CNPId = CNP;
             myNeed = need;
         }
 
         public void action() {   
             switch (step) {
-            case 0:     
+            case START:
+                // Update the list of worker agents that do the required service
+                DFAgentDescription template = new DFAgentDescription();
+                ServiceDescription sd = new ServiceDescription();
+                sd.setType(myNeed);
+                template.addServices(sd);
+
+                try {
+                    DFAgentDescription[] result = DFService.search(myAgent, template); 
+                    if(result.length > 0){
+                        // System.out.println("-> Client" + myNumber + ": \tFound the following worker agents:");
+                        workerAgents = new AID[result.length];
+                        for (int i = 0; i < result.length; ++i) {
+                            workerAgents[i] = result[i].getName();
+                            // System.out.println("\t-> " + workerAgents[i].getName());
+                        }   
+                        step = Steps.CFP;                         
+                    }
+                    else{
+                        tries[CNPId]++;
+                        System.out.println("-> Client" + myNumber + ": \tNone worker agents found.");
+                    }
+                    
+                } catch (FIPAException fe) {
+                    fe.printStackTrace();
+                } 
+
+            case CFP:     
                 // Send the cfp to all sellers
                 ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
                 
@@ -107,13 +124,14 @@ public class Client extends Agent {
                 cfp.setConversationId("contract");
                 cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
                 myAgent.send(cfp);
+                System.out.println("Sending...");
                 
                 // Prepare the template to get proposals
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("contract"),
                                         MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
-                step = 1;
+                step = Steps.OFFERS;
                 break;
-            case 1:
+            case OFFERS:
                 // Receive all proposals/refusals from seller agents
                 ACLMessage reply = myAgent.receive(mt);
 
@@ -132,13 +150,13 @@ public class Client extends Agent {
                     repliesCnt++;
                     if (repliesCnt >= workerAgents.length) {
                         // We received all replies
-                        step = 2; 
+                        step = Steps.ANSWER; 
                     }
                 } else {
                     block();
                 }
                 break;
-            case 2:                
+            case ANSWER:                
                 // Send the purchase order to the seller that provided the best offer
                 ACLMessage order = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
                 order.addReceiver(bestWorker);
@@ -150,9 +168,9 @@ public class Client extends Agent {
                 // Prepare the template to get the purchase order reply
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("contract"),
                                         MessageTemplate.MatchInReplyTo(order.getReplyWith()));
-                step = 3;
+                step = Steps.CONFIRMATION;
                 break;
-            case 3:      
+            case CONFIRMATION:      
                 // Receive the purchase order reply
                 reply = myAgent.receive(mt);
                 if (reply != null) {
@@ -164,9 +182,10 @@ public class Client extends Agent {
                         //nContracts--;    
                     } else {
                         // System.out.println("-> Client" + myNumber + ": \tAttempt failed: required worker already busy.");
-                        myAgent.addBehaviour(new RequestPerformer(workerAgents,myNeed));
+                        tries[CNPId]++;
+                        myAgent.addBehaviour(new RequestPerformer(CNPId, myNeed));
                     }
-                    step=4;
+                    step=Steps.END;
                 } else {
                     block();
                 }
@@ -175,19 +194,40 @@ public class Client extends Agent {
         }
 
         public boolean done() {
-            if (step == 2 && bestWorker == null) {
-                // System.out.println("-> Client" + myNumber + ": \tAttempt failed: " + myNeed + " not available!");
-                
+            if(step == Steps.START && tries[CNPId]>=5){
+                //End intention
+                try{
+                    System.out.println("-> Client" + myNumber + ": could not found a worker for " + myNeed + ". Giving up!");
+                    myAgent.removeBehaviour(this);  
+                }catch(NullPointerException ex){
+                    System.out.println("!!!!! Error removing intention !!!!!");
+                }
+            }
+            
+            if (step == Steps.ANSWER && bestWorker == null) {
                 //restart intention
                 try{
-                    myAgent.addBehaviour(new RequestPerformer(workerAgents,myNeed));
+                    tries[CNPId]++;
+                    if(tries[CNPId]<5){
+                        myAgent.addBehaviour(new RequestPerformer(CNPId, myNeed));
+                    }
+                    else{
+                        System.out.println("-> Client" + myNumber + ": found a suitable worker for " + myNeed + " but he is buzy. Waiting for a while.");
+                        try{
+                            Thread.sleep(200);
+                        } catch(Exception e){
+                            System.out.println("-> Worker" + myNumber + ": \n\tErro in 'sleep'.");
+                        }   
+                        myAgent.addBehaviour(new RequestPerformer(CNPId, myNeed));
+
+                    }
                     myAgent.removeBehaviour(this);  
                 }catch(NullPointerException ex){
                     System.out.println("!!!!! Error restarting intention !!!!!");
                 }
                            
             }
-            else if(step==4){
+            else if(step == Steps.END){
                 try{
                     myAgent.removeBehaviour(this);          //Deleting this behaviour (Contract done)  
                 }catch(NullPointerException ex){
@@ -195,7 +235,7 @@ public class Client extends Agent {
                 }
                 
             }   
-            return ((step == 2 && bestWorker == null) || step == 4); 
+            return ((step == Steps.ANSWER && bestWorker == null) || step == Steps.END); 
         }
     }  // End of inner class RequestPerformer
 }

@@ -15,7 +15,7 @@ public class Occupation {
         //Define de worker function
         switch(n){
             case 0:
-                this.occup = "plumper";
+                this.occup = "plumber";
                 this.minValue = 30;
                 this.maxValue = 150;
                 this.workTime = 30;

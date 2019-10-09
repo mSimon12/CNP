@@ -50,7 +50,7 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
       .wait(all_proposals_received(Id,.length(LP)), 4000, _);
       !contract(Id).
 
-+!startCNP(Id,Task): <- .print("Give up looking for ",Task);
++!startCNP(Id,Task) <- .print("Give up looking for ",Task);
                         -tries(Id,N);                                   // clear tries counter
                         -myNeed(CNPId,F).                               // clear myNeed.
 

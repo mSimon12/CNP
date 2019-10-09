@@ -13,8 +13,10 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 public class Worker extends Agent {
     private int myNumber = -1;
     Occupation myFunction; 
-    private Integer price = null;
+    private int price = null;
     private Boolean working = false;
+    private int jobs = 0;
+    private int money = 0;
     
     @Override
     protected void setup() {
@@ -74,7 +76,8 @@ public class Worker extends Agent {
                     //Verify if this worker is available
                     if(!working){
                         reply.setPerformative(ACLMessage.PROPOSE);
-                        reply.setContent(String.valueOf(myFunction.getPrice()));
+                        price = myFunction.getPrice();
+                        reply.setContent(String.valueOf(price));
                     } else {
                         // The requested worker is NOT available.
                         reply.setPerformative(ACLMessage.REFUSE);
@@ -117,6 +120,8 @@ public class Worker extends Agent {
                         
                         // Add the behaviour for agent working
                         working = true;
+                        jobs++;
+                        money += price;
                         myAgent.addBehaviour(new agentWorking(myFunction.getTime()));
                         System.out.println("-> Worker" + myNumber + ": \tWorking for: " + msg.getSender().getName());
                     } 

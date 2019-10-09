@@ -69,11 +69,24 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
 
 +!startCNP(Id,Task) <- .print(Id, " gave up looking for ",Task, " for now");
                         -tries(Id,_);                                   // clear tries counter
-                        //-myNeed(Id,F).                               // clear myNeed.
-                        +tries(Id,0);
-                        .wait(20000);
-                        .print(Id, " is looking for ", Task, " again");
-                        !startCNP(Id,Task).
+                        -myNeed(Id,Task);                               // clear myNeed.
+                        !findWorker(Id, Task).
+
++!findWorker(Id, Task) <- 
+               .print("Checking if there is a ", Task);
+               .df_search(Task, LP);
+               .length(LP, GiveUp);
+               !waitWorkerOrGiveUp(Id, Task, GiveUp).
+
++!waitWorkerOrGiveUp(Id, Task, GiveUp) : GiveUp \== 0 <- 
+            .print(Id, " found a suitable worker for ", Task, " but he is buzy. Waiting for a while");
+            +myNeed(Id,Task); 
+            +tries(Id,0);
+            .wait(20000);
+            !startCNP(Id,Task).
+
++!waitWorkerOrGiveUp(Id, Task, GiveUp) : GiveUp == 0 <- 
+            .print(Id, " could not found a worker for ", Task, ". Giving up!").
 
 
 +!contract(Id)

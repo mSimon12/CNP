@@ -17,6 +17,7 @@ occupation(9,doctor,400,4500,20).
 nOccupations(10).
 
 price(0).
+money(0).
 
 working(false).
 count(0).
@@ -84,6 +85,7 @@ thinking(false).
 @r1 +accept_proposal(CNPId)[source(A)]
    :  proposal(CNPId,Task,Offer) &
       working(false) & 
+      money(M) &
       myFunction(_,_,_,MWT) & .random(R) & WT = math.round(MWT + 10*R)
    <- -+working(true);                          // turn the worker to busy state
       -+workTime(WT);
@@ -91,6 +93,8 @@ thinking(false).
       .send(A,tell,inform_done(CNPId));
       .abolish(proposal(CNPId,_,_));            // clear proposal memory
       -accept_proposal(CNPId)[source(A)];       // clear accept_proposal memory
+      -money(M);
+      +money(M + Offer);
       !work.                                    // do the task and report to client
                                           
 // refuse Proposal if worker already busy

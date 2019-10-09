@@ -6,8 +6,17 @@
 occupation(0,plumber).
 occupation(1,electrician).
 occupation(2,builder).
+occupation(3,baker).
+occupation(4,hairdresser).
+occupation(5,gardener).
+occupation(6,mechanic).
+occupation(7,painter).
+occupation(8,engineer).
+occupation(9,doctor).
 
-nOccupations(3).
+
+
+nOccupations(10).
 nCNPs(3).
 count(0).
 

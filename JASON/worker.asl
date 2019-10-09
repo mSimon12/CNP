@@ -5,9 +5,16 @@
 */
 occupation(0,plumber,30,150,30).
 occupation(1,electrician,30,100,25).
-occupation(2,builder,80,1000,50).
+occupation(2,builder,80,1000,80).
+occupation(3,baker,20,100,10).
+occupation(4,hairdresser,10,90,10).
+occupation(5,gardener,30,200,40).
+occupation(6,mechanic,40,1000,30).
+occupation(7,painter,25,400,50).
+occupation(8,engineer,400,4000,80).
+occupation(9,doctor,400,4500,20).
 
-nOccupations(3).
+nOccupations(10).
 
 price(0).
 

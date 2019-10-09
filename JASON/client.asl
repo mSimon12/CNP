@@ -24,7 +24,18 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
 //Register the agent as client 
 +!register <- .df_register(client).
 
-+!init <- !start |&| !start |&| !start.
++!init : nCNPs(N) <- 
+      !loop(1, N, "").
+
++!loop(I, F, S1) : I < F <- 
+      .concat(S1, "!start |&| ", S2);
+      !loop(I+1, F, S2).
+
++!loop(I, F, S1) : I >= F <-
+      .concat(S1, "!start", S2);
+      .print("SF: ", S2);
+      .term2string(T,S2);
+      X is T.
 
 //Defines the worker function
 +!start : .random(R) & nOccupations(NO) & N = math.floor(NO*R) & occupation(N,F) & 

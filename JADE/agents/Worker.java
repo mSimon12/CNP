@@ -25,7 +25,7 @@ public class Worker extends Agent {
 
         System.out.println("Hello from " + getAID().getName() + "\tI am worker number " + myNumber + ": " + myFunction.getOccup());                
 
-        // Register the book-selling service in the yellow pages
+        // Register the worker service in the yellow pages
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
         ServiceDescription sd = new ServiceDescription();
@@ -161,6 +161,7 @@ public class Worker extends Agent {
             }   
             if (cont>=this.time){
                 working = false;
+                System.out.println("-> Worker" + myNumber + ": \tFinished working!!!");
                 myAgent.removeBehaviour(this);
             }   
         } 

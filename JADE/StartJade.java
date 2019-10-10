@@ -28,14 +28,17 @@ public class StartJade {
 
     void createAgents() throws Exception {
         //creating Workers
-        for (int i=1; i<2; i++) {
+        for (int i=1; i<50; i++) {
             AgentController ac = cc.createNewAgent("worker"+i, "agents.Worker", new Object[] { i });
             ac.start();
         }
         //creating Clients
-        for (int i=1; i<2; i++) {
+        for (int i=1; i<5; i++) {
             AgentController ac = cc.createNewAgent("client"+i, "agents.Client", new Object[] { i });
             ac.start();
         }
+
+        AgentController ac = cc.createNewAgent("severino", "agents.Severino", new Object[] { });
+        ac.start();
     }
 }

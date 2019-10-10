@@ -7,6 +7,7 @@ public class Occupation {
     private int minValue;
     private int workTime;
     private String occup;
+    private static int nOccup=10;
 
     Occupation(){
         Random rand = new Random();
@@ -89,6 +90,48 @@ public class Occupation {
     public int getTime(){
         Random rand = new Random();
         return (int)(this.workTime + 10 * rand.nextFloat()); 
+    }
+
+    public static int nOpccupations(){
+        return nOccup;
+    }
+
+    public static String num2func(int i){
+        String fun = "";
+        //Define de worker function
+        switch(i){
+            case 0:
+                fun = "plumber";
+                break;
+            case 1:
+                fun = "electrician";
+                break;
+            case 2:
+                fun = "builder";
+                break;
+            case 3:
+                fun = "baker";
+                break;
+            case 4:
+                fun = "hairdresser";
+                break;
+            case 5:
+                fun = "gardner";
+                break;
+            case 6:
+                fun = "mechanic";
+                break;
+            case 7:
+                fun = "painter";
+                break;
+            case 8:
+                fun = "engineer";
+                break;
+            case 9:
+                fun =  "doctor";
+                break;
+        }
+        return fun;
     }
 
 }

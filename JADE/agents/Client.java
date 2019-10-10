@@ -23,6 +23,7 @@ enum Steps{
 public class Client extends Agent {
     private int myNumber = -1;
     private int nCNPs = 3;              //Define how many CNP will be started
+    private int CNPended = 0;
     private int nContracts = 0;
     private int[] tries; 
 
@@ -35,24 +36,37 @@ public class Client extends Agent {
         
         System.out.println("Hello from " + getAID().getName() + "\tI am Client number " + myNumber);
 
+        // Register the client service in the yellow pages
+        DFAgentDescription dfd = new DFAgentDescription();
+        dfd.setName(getAID());
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType("client");
+        sd.setName("client" + myNumber);
+        dfd.addServices(sd);
+        try {
+            DFService.register(this, dfd);
+        } catch (FIPAException fe) {
+            fe.printStackTrace();
+        }
+
         // create a simple behavior 
         addBehaviour(new OneShotBehaviour() {
             public void action() {
                 while(nContracts < nCNPs){
                     //System.out.println("-> Client" + myNumber + ": \tNumber of contracts: " + nContracts);
-                    
+      
                     //Define which service will be required
                     Occupation task = new Occupation();
                     String myNeed = task.getOccup();    
-                    
-                    
+                                        
                     System.out.println("\n------------------- Client" + myNumber + " starting Contract Net Protocol " + (nContracts+1) + "! -------------------");
                     System.out.println("-> Client" + myNumber + ": \tTrying to contract a " + myNeed);
                     
                     tries[nContracts]=0;
                     myAgent.addBehaviour(new RequestPerformer(nContracts, myNeed));
                     nContracts++;                                              
-                }                
+                } 
+                
             }
         });
         //doDelete();
@@ -77,6 +91,7 @@ public class Client extends Agent {
         private int repliesCnt = 0;     // The counter of replies from seller agents
         private Steps step = Steps.START;
         private int CNPId;
+        private AID severino;
         
         //Constructor to define Workers that are capable to do the desired need
         RequestPerformer(int CNP, String need){
@@ -125,7 +140,7 @@ public class Client extends Agent {
                 cfp.setConversationId("contract");
                 cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
                 myAgent.send(cfp);
-                // System.out.println("Sending...");
+                // System.out.println("Sending CFP...");
                 
                 // Prepare the template to get proposals
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("contract"),
@@ -198,6 +213,29 @@ public class Client extends Agent {
             if(step == Steps.START && tries[CNPId]>=5){
                 //End intention
                 try{
+                    CNPended++;
+                    if(CNPended == nCNPs){
+                        //System.out.println("SENDING END");
+    
+                        ACLMessage msg = new ACLMessage(ACLMessage.CFP);
+
+                        DFAgentDescription template = new DFAgentDescription();
+                        ServiceDescription sd = new ServiceDescription();
+                        sd.setType("severino");
+                        template.addServices(sd);
+                
+                        try{
+                            DFAgentDescription[] result = DFService.search(myAgent, template);
+                            severino = result[0].getName();
+                        } catch (FIPAException fe) {
+                            fe.printStackTrace();
+                        } 
+
+                        msg.addReceiver(severino);
+                        msg.setContent("Ending");
+                        msg.setConversationId("END");
+                        myAgent.send(msg);
+                    }
                     System.out.println("-> Client" + myNumber + "-" + CNPId + ": \tCould not found a worker for " + myNeed + ". Giving up!");
                     myAgent.removeBehaviour(this);  
                 }catch(NullPointerException ex){
@@ -215,7 +253,7 @@ public class Client extends Agent {
                     else{
                         System.out.println("-> Client" + myNumber + "-" + CNPId + ": \tFound a suitable worker for " + myNeed + " but he is buzy. Waiting for a while.");
                         try{
-                            Thread.sleep(200);
+                            Thread.sleep(20000);
                         } catch(Exception e){
                             System.out.println("-> Client" + myNumber + "-" + CNPId + ": \n\tErro in 'sleep'.");
                         }   
@@ -230,6 +268,29 @@ public class Client extends Agent {
             }
             else if(step == Steps.END){
                 try{
+                    CNPended++;
+                    if(CNPended == nCNPs){
+                        //System.out.println("SENDING END");
+    
+                        ACLMessage msg = new ACLMessage(ACLMessage.CFP);
+
+                        DFAgentDescription template = new DFAgentDescription();
+                        ServiceDescription sd = new ServiceDescription();
+                        sd.setType("severino");
+                        template.addServices(sd);
+                
+                        try{
+                            DFAgentDescription[] result = DFService.search(myAgent, template);
+                            severino = result[0].getName();
+                        } catch (FIPAException fe) {
+                            fe.printStackTrace();
+                        } 
+
+                        msg.addReceiver(severino);
+                        msg.setContent("Ending");
+                        msg.setConversationId("END");
+                        myAgent.send(msg);
+                    }
                     myAgent.removeBehaviour(this);          //Deleting this behaviour (Contract done)  
                 }catch(NullPointerException ex){
                     System.out.println("!!!!! Error removing intention !!!!!");

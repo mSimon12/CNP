@@ -1,13 +1,8 @@
-// Implementation of the Multi-Agent System
-
 MAS contracts {
+	infrastructure: Centralised
 
-    infrastructure: Centralised
-
-    agents:
-        worker #50;      // the participants (3) that offer a service
-        client #200;      // the CNP initiator
-        severino;
-        //tom;
-
+	agents:
+		worker #1;
+		client #1;
+		severino;
 }

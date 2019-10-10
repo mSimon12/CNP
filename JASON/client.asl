@@ -1,3 +1,5 @@
+{ include("settings.asl") }
+
 /* Initial beliefs and rules */
 
 /* Possible Occupations:
@@ -15,7 +17,6 @@ occupation(8,engineer).
 occupation(9,doctor).
 
 nOccupations(10).
-nCNPs(3).
 count(0).
 finished(0).
 
@@ -84,8 +85,11 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
             .wait(20000);
             !startCNP(Id,Task).
 
-+!waitWorkerOrGiveUp(Id, Task, GiveUp) : GiveUp == 0 <- 
-            .print(Id, " could not found a worker for ", Task, ". Giving up!").
++!waitWorkerOrGiveUp(Id, Task, GiveUp) : GiveUp == 0 & finished(N) <- 
+            .print(Id, " could not find a worker for ", Task, ". Giving up!");
+            -finished(N);
+            +finished(N+1);
+            !announce_finished.
 
 
 @lc1[atomic]

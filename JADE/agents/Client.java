@@ -32,6 +32,7 @@ public class Client extends Agent {
         // gets the argument
         Object[] args = getArguments();
         myNumber = Integer.valueOf(args[0].toString());
+        nCNPs = Integer.valueOf(args[1].toString());
         tries = new int[nCNPs];
         
         System.out.println("Hello from " + getAID().getName() + "\tI am Client number " + myNumber);
@@ -122,6 +123,10 @@ public class Client extends Agent {
                     else{
                         tries[CNPId]++;
                         System.out.println("-> Client" + myNumber + "-" + CNPId + ": \tNone worker agents found.");
+                        try{
+                            Thread.sleep(2000);
+                        } catch(Exception e){
+                        } 
                     }
                     
                 } catch (FIPAException fe) {

@@ -69,4 +69,5 @@ search(1).
     !printWorker(Id + 1, CW + NW).
 
 +!printWorker(Id, CW) <-
-    .print("Total workers: ", CW).
+    .print("Total workers: ", CW);
+    .stopMAS.

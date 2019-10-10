@@ -1,1 +1,1 @@
-nCNPs(1).
+nCNPs(5).

@@ -85,6 +85,7 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
             .wait(20000);
             !startCNP(Id,Task).
 
+@lc0[atomic]
 +!waitWorkerOrGiveUp(Id, Task, GiveUp) : GiveUp == 0 & finished(N) <- 
             .print(Id, " could not find a worker for ", Task, ". Giving up!");
             -finished(N);

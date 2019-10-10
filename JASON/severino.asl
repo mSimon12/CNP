@@ -49,7 +49,7 @@ search(1).
     .wait(1).
 
 +!countWorkers <-
-    .wait(5000);
+    .wait(10000);
     !countWorkers(0).
 
 +!countWorkers(Id) : nOccupations(N) & Id < N & occupation(Id, OCC, _) <-

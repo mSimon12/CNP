@@ -168,7 +168,6 @@ public class Worker extends Agent {
                 working = false;
                 System.out.println("-> Worker" + myNumber + ": \tFinished working!!!");
                 myAgent.removeBehaviour(this);
-                System.out.println("-> Worker" + myNumber + ": \tFinished working!!!");
             }   
         } 
 

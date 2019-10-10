@@ -9,8 +9,10 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.wrapper.ContainerController;
 
 public class Severino extends Agent {
+    ContainerController cc;
     private int nClients = 0;
     private int finishedClients = 0;
     private int n;
@@ -19,6 +21,7 @@ public class Severino extends Agent {
     protected void setup() {
         // gets the argument
         Object[] args = getArguments();
+        cc = (ContainerController)args[0];
         
         // Register the client service in the yellow pages
         DFAgentDescription dfd = new DFAgentDescription();
@@ -96,6 +99,12 @@ public class Severino extends Agent {
                     } 
                     System.out.println("Quantity of " + Occupation.num2func(i) + ": " + n);
                 }
+                try{
+                    cc.kill();
+                }catch(Exception e){
+                    System.out.println("Erro in kill.");
+                }
+                
                 
             }
         });

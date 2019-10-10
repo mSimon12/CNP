@@ -38,7 +38,7 @@ public class StartJade {
             ac.start();
         }
 
-        AgentController ac = cc.createNewAgent("severino", "agents.Severino", new Object[] { });
+        AgentController ac = cc.createNewAgent("severino", "agents.Severino", new Object[] { cc });
         ac.start();
     }
 }

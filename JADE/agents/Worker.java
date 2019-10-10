@@ -47,10 +47,10 @@ public class Worker extends Agent {
         addBehaviour(new PurchaseOrdersServer());
     }
 
-    // protected void takeDown() {
-    //     // Printout a dismissal message
-    //     System.out.println("Worker-agent "+getAID().getName()+" terminating.");
-    // }
+    protected void takeDown() {
+        // Printout a dismissal message
+        System.out.println("Worker-agent "+getAID().getName()+" terminating.");
+    }
 
     /**
        Inner class OfferRequestsServer.

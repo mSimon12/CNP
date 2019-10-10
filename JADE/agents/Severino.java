@@ -85,6 +85,13 @@ public class Severino extends Agent {
                         block();
                     }                                    
                 }
+
+                try{
+                    Thread.sleep(10000);
+                } catch(Exception e){
+                    System.out.println("-> Severino: \n\tErro in 'sleep'.");
+                }
+                
                 //All clients ended
                 System.out.println("\nAll Clients ended.\n");
                 
@@ -100,7 +107,7 @@ public class Severino extends Agent {
                     System.out.println("Quantity of " + Occupation.num2func(i) + ": " + n);
                 }
                 try{
-                    cc.kill();
+                    cc.getPlatformController().kill();
                 }catch(Exception e){
                     System.out.println("Erro in kill.");
                 }

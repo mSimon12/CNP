@@ -64,7 +64,8 @@ public class Severino extends Agent {
                     //System.out.println("-> Client" + myNumber + ": \tNumber of contracts: " + nContracts);
 
                     try{
-                        Thread.sleep(2000);
+                        // Thread.sleep(2000);
+                        Thread.sleep(100);
                     } catch(Exception e){
                         System.out.println("-> Severino: \n\tErro in 'sleep'.");
                     }
@@ -87,7 +88,8 @@ public class Severino extends Agent {
                 }
 
                 try{
-                    Thread.sleep(10000);
+                    // Thread.sleep(10000);
+                    Thread.sleep(100);
                 } catch(Exception e){
                     System.out.println("-> Severino: \n\tErro in 'sleep'.");
                 }

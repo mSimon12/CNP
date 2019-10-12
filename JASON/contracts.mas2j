@@ -2,7 +2,7 @@ MAS contracts {
 	infrastructure: Centralised
 
 	agents:
-		worker #1;
-		client #1;
+		worker #50;
+		client #200;
 		severino;
 }

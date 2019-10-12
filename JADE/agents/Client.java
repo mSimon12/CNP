@@ -124,7 +124,8 @@ public class Client extends Agent {
                         tries[CNPId]++;
                         System.out.println("-> Client" + myNumber + "-" + CNPId + ": \tNone worker agents found.");
                         try{
-                            Thread.sleep(2000);
+                            //Thread.sleep(2000);
+                            Thread.sleep(100);
                         } catch(Exception e){
                         } 
                     }
@@ -258,7 +259,8 @@ public class Client extends Agent {
                     else{
                         System.out.println("-> Client" + myNumber + "-" + CNPId + ": \tFound a suitable worker for " + myNeed + " but he is buzy. Waiting for a while.");
                         try{
-                            Thread.sleep(20000);
+                            //Thread.sleep(20000);
+                            Thread.sleep(500);
                         } catch(Exception e){
                             System.out.println("-> Client" + myNumber + "-" + CNPId + ": \n\tErro in 'sleep'.");
                         }   

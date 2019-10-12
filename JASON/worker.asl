@@ -3,6 +3,7 @@
 /* Possible Occupations:
     'cod - function - minValue - maxValue - min working time'
 */
+/*
 occupation(0,plumber,30,150,30).
 occupation(1,electrician,30,100,25).
 occupation(2,builder,80,1000,80).
@@ -13,6 +14,17 @@ occupation(6,mechanic,40,1000,30).
 occupation(7,painter,25,400,50).
 occupation(8,engineer,400,4000,80).
 occupation(9,doctor,400,4500,20).
+*/
+occupation(0,plumber,30,150,1).
+occupation(1,electrician,30,100,1).
+occupation(2,builder,80,1000,1).
+occupation(3,baker,20,100,1).
+occupation(4,hairdresser,10,90,1).
+occupation(5,gardener,30,200,1).
+occupation(6,mechanic,40,1000,1).
+occupation(7,painter,25,400,1).
+occupation(8,engineer,400,4000,1).
+occupation(9,doctor,400,4500,1).
 
 nOccupations(10).
 
@@ -47,7 +59,8 @@ thinking(false).
                .df_subscribe("client").
 
 //Plan for working
-+!work : count(C) & workTime(WT) & C<WT <- .wait(200);
+//+!work : count(C) & workTime(WT) & C<WT <- .wait(200);
++!work : count(C) & workTime(WT) & C<WT <- .wait(1);
                             //.print("Work count: ", C, " of ", WT);
                             -+count(C+1);
                             //.wait(200);
@@ -87,7 +100,8 @@ thinking(false).
    :  proposal(CNPId,Task,Offer) &
       working(false) & 
       money(M) & jobs(J) &
-      myFunction(_,_,_,MWT) & .random(R) & WT = math.round(MWT + 10*R)
+      myFunction(_,_,_,MWT) & .random(R) & WT = math.round(MWT)
+      //myFunction(_,_,_,MWT) & .random(R) & WT = math.round(MWT + 10*R)
    <- -+working(true);                          // turn the worker to busy state
       -+workTime(WT);
       .print("Working for ",A);

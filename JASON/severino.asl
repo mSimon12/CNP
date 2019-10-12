@@ -27,7 +27,8 @@ search(1).
     +nClients(NC);
     .print("Number of clients: ", NC, ". Finished: ", N);
     !checkClients;
-    .wait(10000);
+    //.wait(10000);
+    .wait(5000);
     !searchClients.
 
 +!searchClients <-
@@ -49,7 +50,8 @@ search(1).
     .wait(1).
 
 +!countWorkers <-
-    .wait(10000);
+    //.wait(10000);
+    .wait(1000);
     !countWorkers(0).
 
 +!countWorkers(Id) : nOccupations(N) & Id < N & occupation(Id, OCC, _) <-

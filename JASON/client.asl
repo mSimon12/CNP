@@ -57,7 +57,7 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
    <- -tries(Id,N);
       +tries(Id,N+1);
       //.print(Id, " for ", Task, ": Try #", N);
-      .wait(2000);                                       // wait participants introduction
+      .wait(200);                                       // wait participants introduction
       .df_search(Task,LP);                               // look for workers in the DF
       //.print("Sending CFP to ",LP);
       .abolish(propose(Id,_)[source(_)]);             // clear propose memory
@@ -82,7 +82,8 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
             .print(Id, " found a suitable worker for ", Task, " but he is buzy. Waiting for a while");
             +myNeed(Id,Task); 
             +tries(Id,0);
-            .wait(20000);
+            //.wait(20000);
+            .wait(500);
             !startCNP(Id,Task).
 
 @lc0[atomic]
@@ -108,7 +109,8 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
 // no offer case, maintain intention for current Need
 +!contract(Id) : myNeed(Id,F)
                <- .print("No offers.");
-                  .wait(1000);
+                  //.wait(1000);
+                  .wait(100);
                   !startCNP(Id,F).
 
 +!announce_finished : finished(N) & nCNPs(NM) & N >= NM
@@ -137,7 +139,8 @@ all_proposals_received(CNPId,NP) :-              // NP = number of participants
 // receive refusal from worker and maintain intention for current Need
 +inform_ref(Id)[source(W)] : myNeed(Id,F)
             <- .print("Best worker (", W, ") busy --> restart search for ",F);
-               .wait(1000);
+               //.wait(1000);
+               .wait(100);
                !startCNP(Id,F);
                -inform_ref(Id)[source(W)];                           // clear inform_ref memory
                -myNeed(Id,F).                                       // clear myNeed

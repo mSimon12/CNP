@@ -159,7 +159,8 @@ public class Worker extends Agent {
 
         public void action(){
             try{
-                Thread.sleep(200);
+                //Thread.sleep(200);
+                Thread.sleep(1);
                 cont++;
             } catch(Exception e){
                 System.out.println("-> Worker" + myNumber + ": \n\tErro in 'sleep'.");
